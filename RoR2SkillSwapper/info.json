@@ -1,5 +1,6 @@
 ﻿{
 	"Id": "SkillSwapper",
+	"Author": "Twofacejester",
 	"Version": "0.0.1",
 	"DisplayName": "SkillSwapper",
 	"EntryMethod": "RoR2SkillSwapper.SkillSwapper.Load",
