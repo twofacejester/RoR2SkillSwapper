@@ -11,14 +11,14 @@ Swap out survivor's skills. Works in multiplayer.
 * A list of skill and survivor names can be found [here](https://github.com/twofacejester/RoR2SkillSwapper/wiki)
 1. Go to the character selection screen
 2. Type "/swap character-name slotNumber skillName" into the chat window
-  * E.g. "/swap Merc 0 Evis"
-    * Swaps the Mercenary's Laser Sword with Eviserate
-  * E.g. "/swap Commando 3 Blink"
-    * Swaps the Commando's Roll with the Huntress's Blink
+    * E.g. "/swap Merc 0 Evis"
+      * Swaps the Mercenary's Laser Sword with Eviserate
+    * E.g. "/swap Commando 3 Blink"
+      * Swaps the Commando's Roll with the Huntress's Blink
 3. Repeat
 
 ## Note
-Some skills don't work 
+Some skills don't work (e.g. Mercenary skills) on other survivors. See [Skills](https://github.com/twofacejester/RoR2SkillSwapper/wiki/Skills) for a full list
 
 # Multiplayer
 **You don't need to be host** but skills will only be swapped for the person using the mod (even if they use the same survivor).
