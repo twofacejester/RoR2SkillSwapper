@@ -4,8 +4,9 @@ Swap out survivor's skills. Works in multiplayer.
 
 # Installation
 1. Install [Unity Mod Manager](https://www.nexusmods.com/site/mods/21/)
-2. Download the latest [release](https://github.com/twofacejester/RoR2SkillSwapper/releases)
+2. Download the latest [release](https://github.com/twofacejester/RoR2SkillSwapper/releases) and netstandard.dll
 3. Extract the zip, and move the folder to your Mods folder
+4. Replace the netstandard.dll in /Risk of Rain 2/Risk of Rain 2_Data/Managed with the downloaded copy
 
 # Usage
 * A list of skill and survivor names can be found [here](https://github.com/twofacejester/RoR2SkillSwapper/wiki)
