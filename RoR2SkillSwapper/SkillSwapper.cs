@@ -18,7 +18,9 @@ namespace RoR2SkillSwapper
 
             harmony.PatchAll();
 
-            RoR2Application.isModded = true;
+            var field = Traverse.Create(typeof(RoR2Application)).Field("steamBuildId");
+
+            field.SetValue(field.GetValue<string>() + "MOD");
 
             LoadSkills();
         }

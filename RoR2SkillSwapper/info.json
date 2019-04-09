@@ -1,7 +1,7 @@
 ﻿{
 	"Id": "SkillSwapper",
 	"Author": "Twofacejester",
-	"Version": "0.0.1",
+	"Version": "0.0.2",
 	"DisplayName": "SkillSwapper",
 	"EntryMethod": "RoR2SkillSwapper.SkillSwapper.Load",
 	"AssemblyName": "RoR2SkillSwapper.dll"
