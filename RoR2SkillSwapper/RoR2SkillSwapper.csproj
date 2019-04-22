@@ -6,34 +6,50 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="0Harmony12">
-      <HintPath>libs\0Harmony12.dll</HintPath>
+    <Reference Include="0Harmony">
+      <HintPath>libs\0Harmony.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>libs\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="BepInEx">
+      <HintPath>libs\BepInEx.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="MMHOOK_Assembly-CSharp">
+      <HintPath>libs\MMHOOK_Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>libs\Mono.Cecil.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="TextMeshPro-1.0.55.2017.1.0b11">
       <HintPath>libs\TextMeshPro-1.0.55.2017.1.0b11.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>libs\UnityEngine.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>libs\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
       <HintPath>libs\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>libs\UnityEngine.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityModManager">
-      <HintPath>libs\UnityModManager.dll</HintPath>
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="XCOPY $(TargetPath) &quot;D:\SteamLibrary\steamapps\common\Risk of Rain 2\Mods\SkillSwapper&quot; /y&#xD;&#xA;&#xD;&#xA;XCOPY $(ProjectDir)Info.json &quot;D:\SteamLibrary\steamapps\common\Risk of Rain 2\Mods\SkillSwapper&quot; /y" />
+    <Exec Command="XCOPY $(TargetPath) &quot;D:\SteamLibrary\steamapps\common\Risk of Rain 2\BepInEx\plugins\skill-swapper&quot; /y" />
   </Target>
 
 </Project>

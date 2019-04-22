@@ -2,11 +2,12 @@
 Ever want to play the Artificer or Engineer with a movement skill, or ever want to play Mercenary with only Eviscerate? Now you can!
 Swap out survivor's skills. Works in multiplayer.
 
+Now with (a select few) monster skills!
+
 # Installation
-1. Install [Unity Mod Manager](https://www.nexusmods.com/site/mods/21/)
-2. Download the latest [release](https://github.com/twofacejester/RoR2SkillSwapper/releases) and netstandard.dll
-3. Extract the zip, and move the folder to your Mods folder
-4. Replace the netstandard.dll in /Risk of Rain 2/Risk of Rain 2_Data/Managed with the downloaded copy
+1. Install [BenInEx](https://thunderstore.io/package/bbepis/BepInExPack/)
+2. Download the latest [release](https://github.com/twofacejester/RoR2SkillSwapper/releases)
+3. Extract the zip, and copy the skill-swapper folder to your BepInEx/plugins folder
 
 # Usage
 * A list of skill and survivor names can be found [here](https://github.com/twofacejester/RoR2SkillSwapper/wiki)
