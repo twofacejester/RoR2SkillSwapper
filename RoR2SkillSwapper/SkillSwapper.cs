@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace RoR2SkillSwapper
 {
-    [BepInPlugin("twoface-skillswapper", "Skill Swapper", "0.3.0")]
+    [BepInPlugin("twoface-skillswapper", "Skill Swapper", "0.3.1")]
     public class SkillSwapper : BaseUnityPlugin
     {
         public List<GenericSkill> Skills;
@@ -37,11 +37,18 @@ namespace RoR2SkillSwapper
                     }
                     else
                         Chat.AddMessage("Usage: swap survivor-name 0|1|2|3 skill-name");
+
                     field.text = "";
                 }
                 else if (text.StartsWith("dump"))
                 {
                     Dump();
+                    field.text = "";
+                }
+                else if (text.StartsWith("reset"))
+                {
+                    Reset();
+                    Chat.AddMessage("Reset survivors");
                     field.text = "";
                 }
             }
@@ -50,6 +57,43 @@ namespace RoR2SkillSwapper
         }
 
         private void Log(string s) => Logger.LogDebug(s);
+
+        // TODO replace this with a better method
+        // Reloading the prefabs from the resource files causes issues with the character select (and fails to actually reset the skills)
+        // This may be due to how it was coded at the time
+        private void Reset()
+        {
+            var slots = new SkillSlot[]
+            {
+                SkillSlot.Primary,
+                SkillSlot.Secondary,
+                SkillSlot.Utility,
+                SkillSlot.Special
+            };
+
+            var survivors = new (SurvivorIndex, string[])[] 
+            {
+                (SurvivorIndex.Commando, new string[] { "FirePistol", "FireFMJ", "Roll", "Barrage" }),
+                (SurvivorIndex.Engineer, new string[] { "FireGrenade", "PlaceMine", "PlaceBubbleShield", "PlaceTurret" }),
+                (SurvivorIndex.Huntress, new string[] { "FireSeekingArrow", "Glaive", "Blink", "ArrowRain" }),
+                (SurvivorIndex.Mage, new string[] { "FireFirebolt", "NovaBomb", "Wall", "Flamethrower" }),
+                (SurvivorIndex.Merc, new string[] { "GroundLight", "Whirlwind", "Dash", "Evis" }),
+                (SurvivorIndex.Toolbot, new string[] { "FireNailgun", "StunDrone", "ToolbotDash", "Swap" })
+            };
+
+            foreach ((var surv, var skills) in survivors)
+            {
+                var prefab = GetPrefab(surv);
+                
+                for (var i = 0; i < slots.Length; i++)
+                {
+                    var skill = Skills.FirstOrDefault(s => s.skillName == skills[i]);
+                    var slot = slots[i];
+
+                    ReplaceSkill(prefab, skill, slot);
+                }
+            }
+        }
 
         private GameObject GetPrefab(SurvivorIndex index)
         {
@@ -60,13 +104,12 @@ namespace RoR2SkillSwapper
 
         private void ReplaceSkill(GameObject prefab, GenericSkill skill, SkillSlot slot)
         {
-            var charBody = prefab.GetComponent<CharacterBody>();
             var locator = prefab.GetComponent<SkillLocator>();
 
             var replaced = locator.GetSkill(slot);
-            var addedSkill = prefab.AddComponent(skill);
+            var addedSkill = GetSkill(prefab, skill.skillName) ?? prefab.AddComponent(skill);
 
-            switch(slot)
+            switch (slot)
             {
                 case SkillSlot.Primary: locator.primary = addedSkill; break;
                 case SkillSlot.Secondary: locator.secondary = addedSkill; break;
@@ -88,7 +131,14 @@ namespace RoR2SkillSwapper
                 return;
             }
             var prefab = GetPrefab(survivor);
-            var skill = Skills.Where(s => s.skillName == skillName).FirstOrDefault();
+
+            var skill = Skills.FirstOrDefault(s => s.skillName == skillName);
+
+            if (skill == null)
+            {
+                Chat.AddMessage($"Unknown skill: {skillName}");
+                return;
+            }
 
             if (!int.TryParse(slotString, out var slotNum))
             {
@@ -102,15 +152,12 @@ namespace RoR2SkillSwapper
             }
             var slot = (SkillSlot)slotNum;
 
-            if (skill == null)
-            {
-                Chat.AddMessage($"Unknown skill: {skillName}");
-                return;
-            }
-
             ReplaceSkill(prefab, skill, slot);
             Chat.AddMessage($"Swapped {Enum.GetName(typeof(SurvivorIndex), survivor)}'s skill for {skillName}");
         }
+
+        private GenericSkill GetSkill(GameObject body, string skillName) =>
+            body.GetComponents<GenericSkill>().FirstOrDefault(s => s.skillName == skillName);
 
         private void LoadSkills()
         {
