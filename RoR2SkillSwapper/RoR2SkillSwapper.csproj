@@ -26,8 +26,8 @@
       <HintPath>libs\Mono.Cecil.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="TextMeshPro-1.0.55.2017.1.0b11">
-      <HintPath>libs\TextMeshPro-1.0.55.2017.1.0b11.dll</HintPath>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>libs\Unity.TextMeshPro.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine">

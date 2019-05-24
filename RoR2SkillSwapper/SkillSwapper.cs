@@ -1,5 +1,5 @@
 ﻿using BepInEx;
-using Harmony;
+using HarmonyLib;
 using RoR2;
 using RoR2.UI;
 using System;
@@ -10,10 +10,10 @@ using UnityEngine;
 
 namespace RoR2SkillSwapper
 {
-    [BepInPlugin("twoface-skillswapper", "Skill Swapper", "0.3.1")]
+    [BepInPlugin("twoface.skillswapper", "Skill Swapper", "0.3.2")]
     public class SkillSwapper : BaseUnityPlugin
     {
-        public List<GenericSkill> Skills;
+        public static List<GenericSkill> Skills = new List<GenericSkill>();
 
         public SkillSwapper() {}
 
@@ -56,7 +56,8 @@ namespace RoR2SkillSwapper
             orig.Invoke(chatbox);
         }
 
-        private void Log(string s) => Logger.LogDebug(s);
+        private void Log(string s) => Logger.LogInfo(s);
+        private void Debug(string s) => Logger.LogDebug(s);
 
         // TODO replace this with a better method
         // Reloading the prefabs from the resource files causes issues with the character select (and fails to actually reset the skills)
@@ -122,7 +123,7 @@ namespace RoR2SkillSwapper
 
         private void Replace(string survivorName, string slotString, string skillName)
         {
-            if (Skills == null)
+            if (Skills.Count == 0)
                 LoadSkills();
 
             if (!Enum.TryParse(survivorName, out SurvivorIndex survivor))
@@ -130,6 +131,7 @@ namespace RoR2SkillSwapper
                 Chat.AddMessage("Invalid survivor name");
                 return;
             }
+
             var prefab = GetPrefab(survivor);
 
             var skill = Skills.FirstOrDefault(s => s.skillName == skillName);
@@ -161,8 +163,6 @@ namespace RoR2SkillSwapper
 
         private void LoadSkills()
         {
-            Skills = new List<GenericSkill>();
-
             var bodyPrefabs = new string[]
             {
                 "CommandoBody",
@@ -180,9 +180,11 @@ namespace RoR2SkillSwapper
 
             foreach (var bodyName in bodyPrefabs)
             {
+                Debug($"Loading {bodyName}");
                 var skills = BodyCatalog.FindBodyPrefab(bodyName)?.GetComponents<GenericSkill>();
-                skills.Do(s => Log(s.skillName));
+                skills.Do(s => Debug(s.skillName));
                 Skills.AddRange(skills);
+                Debug($"Finished loading {bodyName}");
             }
         }
 
