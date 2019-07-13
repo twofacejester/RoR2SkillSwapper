@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
 using HarmonyLib;
 using RoR2;
 using RoR2.UI;
@@ -10,14 +11,18 @@ using UnityEngine;
 
 namespace RoR2SkillSwapper
 {
-    [BepInPlugin("twoface.skillswapper", "Skill Swapper", "0.3.2")]
+    [BepInPlugin("twoface.skillswapper", "Skill Swapper", "0.4.0")]
     public class SkillSwapper : BaseUnityPlugin
     {
-        public static List<GenericSkill> Skills = new List<GenericSkill>();
+        public static Dictionary<string, GenericSkill> Skills = new Dictionary<string, GenericSkill>();
 
-        public SkillSwapper() {}
+        private ConfigWrapper<bool> _unsupportedMode;
 
-        public void Awake() => On.RoR2.UI.ChatBox.SubmitChat += ChatHook;
+        public void Awake()
+        {
+            _unsupportedMode = Config.Wrap("SkillSwapper", "UnsupportedMode", "Set to true to enable loading all skills", false);
+            On.RoR2.UI.ChatBox.SubmitChat += ChatHook;
+        }
 
         private void ChatHook(On.RoR2.UI.ChatBox.orig_SubmitChat orig, ChatBox chatbox)
         {
@@ -79,7 +84,8 @@ namespace RoR2SkillSwapper
                 (SurvivorIndex.Huntress, new string[] { "FireSeekingArrow", "Glaive", "Blink", "ArrowRain" }),
                 (SurvivorIndex.Mage, new string[] { "FireFirebolt", "NovaBomb", "Wall", "Flamethrower" }),
                 (SurvivorIndex.Merc, new string[] { "GroundLight", "Whirlwind", "Dash", "Evis" }),
-                (SurvivorIndex.Toolbot, new string[] { "FireNailgun", "StunDrone", "ToolbotDash", "Swap" })
+                (SurvivorIndex.Toolbot, new string[] { "FireNailgun", "StunDrone", "ToolbotDash", "Swap" }),
+                (SurvivorIndex.Treebot, new string[] { "FireSyringe", "AimMortar2", "SonicBoom", "FireFlower2" })
             };
 
             foreach ((var surv, var skills) in survivors)
@@ -88,10 +94,16 @@ namespace RoR2SkillSwapper
                 
                 for (var i = 0; i < slots.Length; i++)
                 {
-                    var skill = Skills.FirstOrDefault(s => s.skillName == skills[i]);
+                    GenericSkill skill = null;
+                    if (!_unsupportedMode.Value)
+                        skill = Skills.GetValue(skills[i]);
+                    else
+                        skill = Skills.GetValue($"{Utils.SurvivorIndexToBodyString(surv)}:{skills[i]}");
+
                     var slot = slots[i];
 
-                    ReplaceSkill(prefab, skill, slot);
+                    if (skill != null)
+                        ReplaceSkill(prefab, skill, slot, true);
                 }
             }
         }
@@ -103,12 +115,17 @@ namespace RoR2SkillSwapper
             return prefabs[intIndex];
         }
 
-        private void ReplaceSkill(GameObject prefab, GenericSkill skill, SkillSlot slot)
+        private void ReplaceSkill(GameObject prefab, GenericSkill skill, SkillSlot slot, bool useExisting = false)
         {
             var locator = prefab.GetComponent<SkillLocator>();
 
             var replaced = locator.GetSkill(slot);
-            var addedSkill = GetSkill(prefab, skill.skillName) ?? prefab.AddComponent(skill);
+            GenericSkill addedSkill;
+
+            if (useExisting)
+                addedSkill = GetSkill(prefab, skill.skillName) ?? prefab.AddComponent(skill);
+            else
+                addedSkill = prefab.AddComponent(skill);
 
             switch (slot)
             {
@@ -132,11 +149,14 @@ namespace RoR2SkillSwapper
                 return;
             }
 
+            if (survivor == SurvivorIndex.Bandit)
+            {
+                Chat.AddMessage("The Bandit is not officially supported. Results may vary");
+            }
+
             var prefab = GetPrefab(survivor);
 
-            var skill = Skills.FirstOrDefault(s => s.skillName == skillName);
-
-            if (skill == null)
+            if (!Skills.TryGetValue(skillName, out var skill))
             {
                 Chat.AddMessage($"Unknown skill: {skillName}");
                 return;
@@ -163,6 +183,14 @@ namespace RoR2SkillSwapper
 
         private void LoadSkills()
         {
+            if (!_unsupportedMode.Value)
+                LoadSupported();
+            else
+                LoadUnsupported();
+        }
+
+        private void LoadSupported()
+        {
             var bodyPrefabs = new string[]
             {
                 "CommandoBody",
@@ -172,6 +200,7 @@ namespace RoR2SkillSwapper
                 "MageBody",
                 "MercBody",
                 "BanditBody",
+                "TreebotBody",
                 "GreaterWispBody",
                 "TitanGoldBody",
                 "VagrantBody",
@@ -182,9 +211,31 @@ namespace RoR2SkillSwapper
             {
                 Debug($"Loading {bodyName}");
                 var skills = BodyCatalog.FindBodyPrefab(bodyName)?.GetComponents<GenericSkill>();
-                skills.Do(s => Debug(s.skillName));
-                Skills.AddRange(skills);
-                Debug($"Finished loading {bodyName}");
+                skills.Do(s => 
+                {
+                    Debug($"Registered {s.skillName}");
+                    Skills.Add(s.skillName, s);
+                });
+            }
+        }
+
+        private void LoadUnsupported()
+        {
+            Chat.AddMessage("WARNING: UnsupportedMode is enabled. There is no guarentee that skills will work.");
+            var bodies = BodyCatalog.allBodyPrefabs;
+
+            foreach (var body in bodies)
+            {
+                Debug($"Loading {body.name}");
+                var skills = body.GetComponents<GenericSkill>();
+                skills.Do(s => 
+                {
+                    if (!string.IsNullOrWhiteSpace(s.skillName))
+                    {
+                        Debug($"Registered {body.name}:{s.skillName}");
+                        Skills.Add($"{body.name}:{s.skillName}", s);
+                    }
+                });
             }
         }
 
@@ -196,7 +247,7 @@ namespace RoR2SkillSwapper
 
                 foreach (var body in bodies)
                 {
-                    writer.WriteLine($"\"body\": {body.name}");
+                    writer.WriteLine($"body: \"{body.name}\"");
                     body.GetComponents<GenericSkill>().Do(s => 
                     {
                         writer.WriteLine($"\t\"{s.skillName}\"");

@@ -1,4 +1,5 @@
 ﻿using RoR2;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
@@ -58,9 +59,19 @@ namespace RoR2SkillSwapper
                     return "MercBody";
                 case SurvivorIndex.Toolbot:
                     return "ToolbotBody";
+                case SurvivorIndex.Treebot:
+                    return "TreebotBody";
                 default:
                     return "";
             }
+        }
+
+        public static TValue GetValue<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue defaultValue = default)
+        {
+            if (dict.TryGetValue(key, out var result))
+                return result;
+
+            return defaultValue;
         }
     }
 }

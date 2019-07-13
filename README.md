@@ -4,6 +4,8 @@ Swap out survivor's skills. Works in multiplayer.
 
 Now with (a select few) monster skills!
 
+Change log available [here](https://github.com/twofacejester/RoR2SkillSwapper/releases)
+
 # Installation
 1. Install [BenInEx](https://thunderstore.io/package/bbepis/BepInExPack/)
 2. Download the latest [release](https://github.com/twofacejester/RoR2SkillSwapper/releases)
