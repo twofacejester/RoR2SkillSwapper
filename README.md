@@ -6,6 +6,9 @@ Now with (a select few) monster skills!
 
 Change log available [here](https://github.com/twofacejester/RoR2SkillSwapper/releases)
 
+# Skills 2.0 Update
+Currently busy with IRL stuff (as of 2019-09-28) - update may be awhile
+
 # Installation
 1. Install [BenInEx](https://thunderstore.io/package/bbepis/BepInExPack/)
 2. Download the latest [release](https://github.com/twofacejester/RoR2SkillSwapper/releases)
