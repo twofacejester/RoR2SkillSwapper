@@ -8,23 +8,19 @@
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>libs\0Harmony.dll</HintPath>
-      <Private>false</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>libs\Assembly-CSharp.dll</HintPath>
-      <Private>false</Private>
     </Reference>
     <Reference Include="BepInEx">
       <HintPath>libs\BepInEx.dll</HintPath>
-      <Private>false</Private>
     </Reference>
     <Reference Include="MMHOOK_Assembly-CSharp">
       <HintPath>libs\MMHOOK_Assembly-CSharp.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>libs\Mono.Cecil.dll</HintPath>
-      <Private>false</Private>
+    <Reference Include="R2API">
+      <HintPath>libs\R2API.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>libs\Unity.TextMeshPro.dll</HintPath>
@@ -41,6 +37,9 @@
     <Reference Include="UnityEngine.IMGUIModule">
       <HintPath>libs\UnityEngine.IMGUIModule.dll</HintPath>
       <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.Networking">
+      <HintPath>libs\UnityEngine.Networking.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>libs\UnityEngine.UI.dll</HintPath>

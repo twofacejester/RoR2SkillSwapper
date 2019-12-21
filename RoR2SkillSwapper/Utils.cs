@@ -1,4 +1,5 @@
 ﻿using RoR2;
+using RoR2.Skills;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
@@ -7,71 +8,69 @@ namespace RoR2SkillSwapper
 {
     static class Utils
     {
-        public static T GetCopyOf<T>(this MonoBehaviour comp, T other) where T : MonoBehaviour
+        public static int StringToSlot(string s)
         {
-            var type = comp.GetType();
-
-            if (type != other.GetType())
-                return null;
-
-            var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
-            var pinfos = type.GetProperties(flags);
-
-            while (type != typeof(MonoBehaviour))
+            switch (s)
             {
-                foreach (var pinfo in pinfos)
-                {
-                    if (!pinfo.CanWrite)
-                        continue;
-
-                    pinfo.SetValue(comp, pinfo.GetValue(other, null), null);
-                }
-
-                var finfos = type.GetFields(flags);
-                foreach (var finfo in finfos)
-                {
-                    finfo.SetValue(comp, finfo.GetValue(other));
-
-                }
-
-                type = type.BaseType;
-            }
-
-            return comp as T;
-        }
-
-        public static T AddComponent<T>(this GameObject ob, T toAdd) where T : MonoBehaviour
-            => ob.AddComponent<T>().GetCopyOf(toAdd) as T;
-
-        public static string SurvivorIndexToBodyString(SurvivorIndex index)
-        {
-            switch(index)
-            {
-                case SurvivorIndex.Commando:
-                    return "CommandoBody";
-                case SurvivorIndex.Engineer:
-                    return "EngiBody";
-                case SurvivorIndex.Huntress:
-                    return "HuntressBody";
-                case SurvivorIndex.Mage:
-                    return "MageBody";
-                case SurvivorIndex.Merc:
-                    return "MercBody";
-                case SurvivorIndex.Toolbot:
-                    return "ToolbotBody";
-                case SurvivorIndex.Treebot:
-                    return "TreebotBody";
+                case "0":
+                case "left":
+                case "p":
+                case "primary":
+                    return 0;
+                case "1":
+                case "right":
+                case "s":
+                case "secondary":
+                    return 1;
+                case "2":
+                case "shift":
+                case "u":
+                case "utility":
+                    return 2;
+                case "3":
+                case "r":
+                case "sp":
+                case "special":
+                    return 3;
                 default:
-                    return "";
+                    return -1;
             }
         }
 
-        public static TValue GetValue<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue defaultValue = default)
+        public static void Override(object source, GenericSkill slot, SkillDef skillDef)
         {
-            if (dict.TryGetValue(key, out var result))
-                return result;
-
-            return defaultValue;
+            if (slot != null && skillDef != null)
+                slot.SetSkillOverride(source, skillDef, GenericSkill.SkillOverridePriority.Replacement);
         }
+
+        public static void Remove(object source, GenericSkill slot, SkillDef toRemove) =>
+            slot.UnsetSkillOverride(source, toRemove, GenericSkill.SkillOverridePriority.Replacement);
+
+        public static GenericSkill GetSlot(int i)
+        {
+            var locator = GetBody()?.skillLocator;
+
+            if (locator == null)
+            {
+                Chat.AddMessage("Couldn't find the player's body");
+                return null;
+            }
+
+            switch (i)
+            {
+                case 0:
+                    return locator.primary;
+                case 1:
+                    return locator.secondary;
+                case 2:
+                    return locator.utility;
+                case 3:
+                    return locator.special;
+                default:
+                    return null;
+            }
+        }
+
+        public static CharacterBody GetBody() => PlayerCharacterMasterController.instances[0]?.master?.GetBody();
     }
 }
