@@ -4,11 +4,12 @@ using RoR2.Skills;
 using RoR2.UI;
 using System.IO;
 using System.Linq;
+using UnityEngine.Networking;
 using static RoR2SkillSwapper.Utils;
 
 namespace RoR2SkillSwapper
 {
-    [BepInPlugin("twoface.skillswapper", "Skill Swapper", "2.0.0")]
+    [BepInPlugin("twoface.skillswapper", "Skill Swapper", "2.1.0")]
     public class SkillSwapper : BaseUnityPlugin
     {
         private int?[] _skillReplacementIndices;
@@ -18,7 +19,20 @@ namespace RoR2SkillSwapper
         public void Awake()
         {
             On.RoR2.UI.ChatBox.SubmitChat += ChatHook;
-            On.RoR2.Run.OnServerCharacterBodySpawned += BodySpawnHook;
+
+            On.RoR2.CharacterMaster.OnBodyStart += (orig, self, body) =>
+            {
+                orig.Invoke(self, body);
+
+                if (self.playerCharacterMasterController && 
+                    self.playerCharacterMasterController.networkUserObject &&
+                    self.playerCharacterMasterController.networkUserObject.GetComponent<NetworkIdentity>().isLocalPlayer)
+                {
+                    Log("spawned local body; reapplying");
+                    Reapply();
+                }
+            };
+               
             _skillReplacementIndices = new int?[4];
             _skillReplacements = new SkillDef[4];
         }
