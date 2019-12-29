@@ -28,7 +28,7 @@ namespace RoR2SkillSwapper
                     self.playerCharacterMasterController.networkUserObject &&
                     self.playerCharacterMasterController.networkUserObject.GetComponent<NetworkIdentity>().isLocalPlayer)
                 {
-                    Log("spawned local body; reapplying");
+                    Debug("Spawned local body; reapplying");
                     Reapply();
                 }
             };
@@ -102,16 +102,6 @@ namespace RoR2SkillSwapper
             }
 
             orig.Invoke(chatbox);
-        }
-
-        private void BodySpawnHook(On.RoR2.Run.orig_OnServerCharacterBodySpawned orig, Run self, CharacterBody body)
-        {
-            if (GetBody() == body)
-            {
-                Reapply();
-            }
-
-            orig.Invoke(self, body);
         }
 
         private void Log(string s) => Logger.LogInfo(s);

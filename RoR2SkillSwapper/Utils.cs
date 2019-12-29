@@ -71,6 +71,17 @@ namespace RoR2SkillSwapper
             }
         }
 
-        public static CharacterBody GetBody() => PlayerCharacterMasterController.instances[0]?.master?.GetBody();
+        public static CharacterBody GetBody()
+        {
+            var localId = LocalUserManager.GetFirstLocalUser().currentNetworkUser.Network_id;
+
+            foreach (var master in PlayerCharacterMasterController.instances)
+            {
+                if (master.networkUser.Network_id.Equals(localId))
+                    return master.master.GetBody();
+            }
+
+            return null;
+        }
     }
 }
