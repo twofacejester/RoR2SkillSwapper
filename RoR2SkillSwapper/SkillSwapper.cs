@@ -9,7 +9,7 @@ using static RoR2SkillSwapper.Utils;
 
 namespace RoR2SkillSwapper
 {
-    [BepInPlugin("twoface.skillswapper", "Skill Swapper", "2.1.0")]
+    [BepInPlugin("twoface.skillswapper", "Skill Swapper", "2.1.1")]
     public class SkillSwapper : BaseUnityPlugin
     {
         private int?[] _skillReplacementIndices;
